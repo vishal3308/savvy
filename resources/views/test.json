@@ -1,0 +1,42 @@
+{
+    "owner": "OYbI9myO6Vbzc3h287MJcKrpnd23",
+    "callId": "sry-osza-dsd",
+    "transcriptLines": [
+      
+    ],
+    "duration": {
+      "start": "2022-01-31T10:12:27.211Z",
+      "end": "2022-01-31T10:12:27.211Z",
+      "_id": "61f7b60b93220a1507956fc1"
+    },
+    "ended": false,
+    "name": "Untitled Google Meet call",
+    "participants": [
+      
+    ],
+    "language": "ENG",
+    "summaryEnabled": true,
+    "gDocEnabled": false,
+    "access": {
+      "linkAccess": "RESTRICTED",
+      "accessCode": "d6e4e297-a4a7-45e4-8fd7-72cb593afb9a",
+      "sharedWithArray": [
+        
+      ],
+      "sharedVisible": [
+        
+      ],
+      "sharedWith": {
+        
+      }
+    },
+    "_id": "61f7b60b93220a1507956fc0",
+    "chatMessages": [
+      
+    ],
+    "screenshots": [
+      
+    ],
+    "__v": 0,
+    "id": "61f7b60b93220a1507956fc0"
+  }

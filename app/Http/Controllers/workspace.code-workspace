@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\..\\..\\..\\..\\vishal\\info"
+		},
+		{
+			"path": "..\\..\\..\\..\\news"
+		},
+		{
+			"path": "..\\..\\..\\..\\php"
+		},
+		{
+			"path": "..\\..\\..\\..\\movie"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Users\\rmaur\\Desktop\\Notify.io"
+		},
+		{
+			"path": "..\\..\\.."
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Users\\rmaur\\Desktop\\Savvyfrontend"
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\Users\\rmaur\\Documents\\GitHub\\Savvys-frontend-portal"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Savvyfrontend"
+	}
+}
