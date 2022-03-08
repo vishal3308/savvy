@@ -80,6 +80,5 @@
             </div>
             <p class="small text-center text-muted mb-0">All rights reserved. © Space. 2021 </p>
         </form>
-        <button class="btn btn-primary"><a href="{{route('testing')}}">Test Me</a></button>
     </div>
 @endsection

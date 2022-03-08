@@ -39,7 +39,7 @@
         <input type="text" name="meeting_owner" id="">
         <br><br>
         <input type="submit" name="submit" class="btn btn-primary" value="View Data" />
-        <textarea name="text" id="" cols="30" rows="10">Welcome {{print_r($test)}}</textarea>
+        <textarea name="text" id="" cols="30" rows="10"></textarea>
     </form>
 </body>
 </html>

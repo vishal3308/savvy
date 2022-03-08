@@ -58,7 +58,7 @@ class LoginController extends Controller
         // echo "<pre>";
         // print_r($user);
         // echo "<pre>";
-        return redirect()->route('home');
+        return redirect()->route('oauthCallback');
     }
     protected function _registerOrLoginUser($data)
     {

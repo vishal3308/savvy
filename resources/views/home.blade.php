@@ -15,6 +15,7 @@
                     @endif
 
                     {{ __('You are logged in!')}}
+                    {{print_r(session('status'))}}
                 </div>
             </div>
         </div>

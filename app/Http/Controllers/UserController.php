@@ -95,12 +95,5 @@ class UserController extends Controller
         echo"<pre>";
     }
 
-    public function testing(Request $request){
-        echo "<pre>";
-        print("Welcome in User Controller");
-        // print_r($request);
-        echo "</pre>";
-        $data=$request->all();
-        return view('user',['test'=>$data]);
-    }
+    
 }

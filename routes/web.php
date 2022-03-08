@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TestingController;
+use App\Http\Controllers\gCalenderController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,7 +36,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // Google login
 Route::get('login/google', [App\Http\Controllers\Auth\LoginController::class, 'redirectToGoogle'])->name('login.google');
 Route::get('login/google/callback', [App\Http\Controllers\Auth\LoginController::class, 'handleGoogleCallback']);
-
-// Testing Variable passing
-Route::get('testing',[TestingController::class,'redirecttohome'])->name('testing');
-Route::get('/testresult/{set?}',[UserController::class,'testing'])->name('testresult');
+// Google Calender Api Route
+Route::resource('gcalendar',gCalenderController::class);
+Route::get('oauth',[gCalenderController::class,'oauth'])->name('oauthCallback');
+Route::get('calender_index',[gCalenderController::class, 'index'])->name('cal.index');
