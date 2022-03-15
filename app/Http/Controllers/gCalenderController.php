@@ -1,20 +1,22 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Google_Client;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Google_Service_Calendar_EventDateTime;
+use App\Models\Google_calendar;
 
 class gCalenderController extends Controller
 {
     protected $client;
 
     public function __construct()
-    {
+    {   
+        
         $client = new Google_Client();
         $client->setAuthConfig('client_secret.json');
         $client->addScope(Google_Service_Calendar::CALENDAR);
@@ -22,6 +24,8 @@ class gCalenderController extends Controller
         $guzzleClient = new \GuzzleHttp\Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false)));
         $client->setHttpClient($guzzleClient);
         $this->client = $client;
+        
+       
     }
 
     /**
@@ -39,8 +43,55 @@ class gCalenderController extends Controller
             $calendarId = 'primary';
 
             $results = $service->events->listEvents($calendarId);
-            // return $results->getItems();
-            return view('Calendar_list')->with(['cal_event'=>$results]);
+            $cal_events=$results->getItems();
+            // return $cal_events;
+                foreach($cal_events as $event){
+                    //====Checking for Google Meet or Zoom Event only
+                    if(str_contains($event->location,"web.zoom.us") ||str_contains($event->hangoutLink,"meet.google.com") ){
+                    
+                        if(str_contains($event->location,"web.zoom.us")){
+                            $meeting_plateform="Zoom Meeting";
+                            $meeting_link=$event->location;
+                        }
+                        else{
+                            $meeting_plateform="Google Meet";
+                            $meeting_link=$event->hangoutLink;
+                        }
+                        //Attendee Email storing in an array...
+                        $Attendees=$event->attendees; 
+                        $Attendee_email=[];
+                        foreach($Attendees as $attendee){
+                            array_push($Attendee_email,$attendee->email);
+                        }
+                        //===Checking Recurrence is a array or null
+                        if(is_array($event->recurrence)){
+                            $recurrence=implode(",",$event->recurrence);
+                        }
+                        else{
+                            $recurrence=$event->recurrence;
+                        }
+                        $user_id=Auth::user()->id;
+                        $Events=Google_calendar::where('Event_id', '=',$event->id)->first();
+                        if(!$Events){
+                        $Events= new Google_calendar();      
+
+                        $Events->Event_id=$event->id;
+                        $Events->Meeting_plateform=$meeting_plateform;
+                        $Events->Meeting_link=$meeting_link;
+                        $Events->user_id=$user_id;
+                        $Events->Organizer=$event->organizer->email;
+                        $Events->Attendees=implode(",",$Attendee_email);
+                        $Events->Recurrence=$recurrence;
+                        $Events->Summary=$event->getSummary();
+                        $Events->Description=$event->getDescription();
+                        $Events->Starting_time=$event->getStart()->getDateTime();
+                        $Events->Ending_time=$event->getEnd()->getDateTime();
+                        $Events->save();
+                        }
+                }
+            }
+            //   return json_encode($Events);
+            return view('Calendar_list');
 
         } else {
             return redirect()->route('oauthCallback');

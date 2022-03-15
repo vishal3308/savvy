@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
     public function view(){
-        $user= User::with('getcompany')->get();
-        echo"<pre>";
-        print_r(json_encode($user,JSON_PRETTY_PRINT));
-        echo"<pre>";
+        $user= User::with('get_company')->get();
+        return response()->json($user);
     }
     public function set_meeting(Request $request){
         // echo"<pre>";
