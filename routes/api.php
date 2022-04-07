@@ -30,15 +30,12 @@ Route::post('/user',[UserController::class,'find_user']);
 Auth::routes();
 
 Route::get('/Calendar_events/{id}',[CalendarApiController::class,'calendar_event']);
+Route::put('/Transcription',[CalendarApiController::class,'transcription']);
 
-// Route::group(['namespace' => 'API'], function() {
-//     // Private routes (auth required)
-//     Route::group(['middleware' => 'auth:api'], function() {
-//         Route::get('calendar_index', function(){
-//             return auth()->user();
-//         }); 
-       
-//     });
 
-// });
+// Route::get('details', [CalendarApiController::class,'User_details']);
+
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::get('details', [CalendarApiController::class,'User_details']);
+    });
    

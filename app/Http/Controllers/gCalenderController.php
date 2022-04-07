@@ -9,6 +9,7 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Google_Service_Calendar_EventDateTime;
 use App\Models\Google_calendar;
+use App\Models\User;
 
 class gCalenderController extends Controller
 {
@@ -90,8 +91,12 @@ class gCalenderController extends Controller
                         }
                 }
             }
+            $user=Auth::user();
+            $success=  $user->createToken('MyApp')-> accessToken;
+           
             //   return json_encode($Events);
-            return view('Calendar_list');
+            // return view('Calendar_list');           
+            return redirect("http://localhost:3000/?user_id={$user->id}");
 
         } else {
             return redirect()->route('oauthCallback');
