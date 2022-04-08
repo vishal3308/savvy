@@ -49,4 +49,15 @@ class CalendarApiController extends Controller
         return response()->json(["status"=>$meeting_transcript,"Request"=>$transcript_text]);
         // return response()->json(['output'=>$request->all()]);
     }
+
+    public function transcript_respond(Request $request){
+        $meeting_id=$request->meeting_id;
+        $meeting_transcript=Meeting_transcript::where('meeting_id', '=',$meeting_id)->first();
+        if($meeting_transcript){
+            return response()->json(['Result'=>$meeting_transcript->transcript_text]);
+        }
+        else{
+            return response()->json(['Result'=>'No Result']);
+        }
+    }
 }
