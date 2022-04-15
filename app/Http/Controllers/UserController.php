@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\User;
 use App\Models\Meeting;
+use App\Models\Meeting_transcript;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
@@ -18,13 +19,79 @@ class UserController extends Controller
         // echo"<pre>";
         // print_r($request['meeting_owner']);
         // echo"<pre>";
-        $meeting=new Meeting();
-        $meeting->meeting_owner_id=$request['meeting_owner'];
-        $meeting->external_meeting_id=$request['callId'];
-        $meeting->external_meeting_name=$request['name'];
-        $meeting->save();
-        echo "Successfull";
+        $meeting=Meeting::where("external_meeting_id", '=',$request['callId'])->first();
+        if(!$meeting){
+            $meeting=new Meeting();
+            $meeting->meeting_owner_id=$request['meeting_owner'];
+            $meeting->external_meeting_id=$request['callId'];
+            $meeting->external_meeting_name=$request['name'];
+            $meeting->save();
+        }
+        
+        return response()->json(['status'=>$meeting->id]);
     }
+
+    public function transcription(Request $request){
+        $user_id=$request->id;
+        $meeting=Meeting::where("external_meeting_id", '=',$request->transcript['meeting_id'])->first();
+        if(!$meeting){
+            $meeting=new Meeting();
+            $meeting->meeting_owner_id=$user_id;
+            $meeting->external_meeting_id=$request->transcript['meeting_id'];
+            $meeting->external_meeting_name=$request->transcript['meeting_name'];
+            $meeting->save();
+        }
+
+        $transcript_text=$request->transcript['text'];
+        $speaker_name=$request->transcript['speaker']['name'];
+        $start=date("Y-m-d h:i:s",strtotime($request->transcript['duration']['start']));
+        $end=date("Y-m-d h:i:s",strtotime($request->transcript['duration']['end']));
+        $meeting_transcript=Meeting_transcript::where('meeting_id', '=',$meeting->id)->orderBy("id","desc")->first();
+        if($meeting_transcript){
+            $speaker_start=date("Y-m-d h:i:s",strtotime($meeting_transcript->created_at));
+            if($speaker_start==$start & $speaker_name==$meeting_transcript->speaker_name){
+                $meeting_transcript->transcript_text=$transcript_text;
+                $meeting_transcript->updated_at=$end;
+                $meeting_transcript->update();
+            }
+            else{
+                $meeting_transcript=new Meeting_transcript();
+                $meeting_transcript->meeting_id=$meeting->id;
+                $meeting_transcript->user_id=$user_id;
+                $meeting_transcript->transcript_text=$transcript_text;
+                $meeting_transcript->speaker_name=$speaker_name;
+                $meeting_transcript->created_at=$start;
+                $meeting_transcript->updated_at=$end;
+                $meeting_transcript->save();
+            }
+           
+        }
+        else{
+            $meeting_transcript=new Meeting_transcript();
+            $meeting_transcript->meeting_id=$meeting->id;
+            $meeting_transcript->user_id=$user_id;
+            $meeting_transcript->transcript_text=$transcript_text;
+            $meeting_transcript->speaker_name=$speaker_name;
+            $meeting_transcript->created_at=$start;
+            $meeting_transcript->updated_at=$end;
+            $meeting_transcript->save();
+        }
+       
+        return response()->json(["dbdate"=>$meeting_transcript->created_at,"start"=>$start]);
+        // return response()->json(['output'=>$request->all()]);
+    }
+
+    public function transcript_respond(Request $request){
+        $meeting_id=$request->meeting_id;
+        $meeting_transcript=Meeting_transcript::where('meeting_id', '=',$meeting_id)->first();
+        if($meeting_transcript){
+            return response()->json(['Response'=>$meeting_transcript->transcript_text]);
+        }
+        else{
+            return response()->json(['Response'=>'No Result']);
+        }
+    }
+
     public function find_user(Request $request){
         $user=User::with(['get_company'])->find($request['meeting_owner']);
         // $data=compact('user');

@@ -17,7 +17,7 @@ class CreateMeetingTranscriptTable extends Migration
             $table->id();
             $table->unsignedBigInteger('meeting_id')->nullable();
             $table->foreign('meeting_id')->references('id')->on('meetings');
-
+            $table->string('speaker_name')->nullable();
             $table->longText('transcript_text')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');

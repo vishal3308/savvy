@@ -30,8 +30,8 @@ Route::post('/user',[UserController::class,'find_user']);
 Auth::routes();
 
 Route::get('/Calendar_events/{id}',[CalendarApiController::class,'calendar_event']);
-Route::put('/Transcription',[CalendarApiController::class,'transcription']);
-Route::get('/Transcription_response/{meeting_id}',[CalendarApiController::class,'transcript_respond']);
+Route::put('/Transcription',[UserController::class,'transcription']);
+Route::get('/Transcription_response/{meeting_id}',[UserController::class,'transcript_respond']);
 
 
 // Route::get('details', [CalendarApiController::class,'User_details']);

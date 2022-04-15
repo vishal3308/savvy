@@ -29,35 +29,4 @@ class CalendarApiController extends Controller
         return response()->json($user);
     }
 
-    public function transcription(Request $request){
-        $user_id=$request->id;
-        $meeting_id=$request->meeting_id;
-        $transcript_text=$request->transcript_text;
-        $meeting_transcript=Meeting_transcript::where('meeting_id', '=',$meeting_id)->first();
-        if($meeting_transcript){
-            $meeting_transcript->transcript_text=$transcript_text;
-            $meeting_transcript->update();
-        }
-        else{
-            $meeting_transcript=new Meeting_transcript();
-            $meeting_transcript->meeting_id=$meeting_id;
-            $meeting_transcript->user_id=$user_id;
-            $meeting_transcript->transcript_text=$transcript_text;
-            $meeting_transcript->save();
-        }
-       
-        return response()->json(["status"=>$meeting_transcript,"Request"=>$transcript_text]);
-        // return response()->json(['output'=>$request->all()]);
-    }
-
-    public function transcript_respond(Request $request){
-        $meeting_id=$request->meeting_id;
-        $meeting_transcript=Meeting_transcript::where('meeting_id', '=',$meeting_id)->first();
-        if($meeting_transcript){
-            return response()->json(['Result'=>$meeting_transcript->transcript_text]);
-        }
-        else{
-            return response()->json(['Result'=>'No Result']);
-        }
-    }
 }
