@@ -22,6 +22,7 @@ use App\Http\Controllers\CalendarApiController;
 //     return view('welcome');
 // });
 Route::get('/user',[UserController::class,'view']);
+Route::get('/check',[UserController::class,'checking']);
 Route::get('/set',function(){
  return view('user');
 });
@@ -42,6 +43,8 @@ Route::get('login/google/callback', [App\Http\Controllers\Auth\LoginController::
 Route::resource('gcalendar',gCalenderController::class);
 Route::get('oauth',[gCalenderController::class,'oauth'])->name('oauthCallback');
 Route::get('cal_index',[gCalenderController::class, 'index'])->name('cal.index');
+Route::get('watch',[gCalenderController::class, 'watch_request']);
+Route::get('notifications',[gCalenderController::class, 'notifications']);
 Route::get('calendar_index',function(){
     return view('calendar_list');
 });

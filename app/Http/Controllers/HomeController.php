@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Http\Controllers\Auth;
 
 class HomeController extends Controller
 {
@@ -23,7 +25,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        session_start();
+        $user_name=$_SESSION['User_name'];
+        $token=$_SESSION['token'];
+        return redirect("http://localhost:3000/?user={$user_name}&token={$token}");
+        
     }
    
 }

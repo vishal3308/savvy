@@ -18,20 +18,28 @@ use App\Http\Controllers\CalendarApiController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return response()->json(['status'=>'successfull']);
+// });
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('check', function() {
+        $user=Auth::user();
+        return response()->json(['status'=>200,'name'=>$user->email]);
+    });
+    Route::post('/Transcription_response',[UserController::class,'transcript_respond']);
+    Route::get('/Calendar_events',[CalendarApiController::class,'calendar_event']);
+
 });
 
-Route::get('/user',[UserController::class,'view']);
-Route::post('/setmeeting',[UserController::class,'set_meeting']);
+// Route::get('/user',[UserController::class,'view']);
 Route::post('/user',[UserController::class,'find_user']);
+Route::post('/setmeeting',[UserController::class,'set_meeting']);
 
 // ===============================Google Calendar ApI ==
 Auth::routes();
 
-Route::get('/Calendar_events/{id}',[CalendarApiController::class,'calendar_event']);
 Route::put('/Transcription',[UserController::class,'transcription']);
-Route::get('/Transcription_response/{meeting_id}',[UserController::class,'transcript_respond']);
+Route::put('/Highlight',[UserController::class,'set_highlight']);
 
 
 // Route::get('details', [CalendarApiController::class,'User_details']);
