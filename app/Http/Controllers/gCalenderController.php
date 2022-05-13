@@ -94,7 +94,7 @@ class gCalenderController extends Controller
             }
             $user=Auth::user();
             $token=  $user->createToken($user->email.'_Token')->plainTextToken;
-            $_SESSION['token']=$token;
+            // $_SESSION['token']=$token;
             $user_name=$user->email;
             $_SESSION['User_name']=$user_name;
            
@@ -123,6 +123,11 @@ class gCalenderController extends Controller
             $_SESSION['access_token'] = $this->client->getAccessToken();
             return redirect()->route('cal.index');
         }
+    }
+
+    public function logout_savvy(){
+        Auth::user()->currentAccessToken()->delete();
+        return redirect()->route('logout');
     }
 
     /**

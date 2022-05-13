@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
     Route::post('/Transcription_response',[UserController::class,'transcript_respond']);
     Route::get('/Calendar_events',[CalendarApiController::class,'calendar_event']);
+    Route::get('/logout',[gCalenderController::class,'logout_savvy']);
 
 });
 
@@ -42,7 +43,6 @@ Route::put('/Transcription',[UserController::class,'transcription']);
 Route::put('/Highlight',[UserController::class,'set_highlight']);
 
 
-// Route::get('details', [CalendarApiController::class,'User_details']);
 
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('details', [CalendarApiController::class,'User_details']);

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Http\Controllers\Auth;
-
+// use App\Http\Controllers\Auth;
+use Auth;
 class HomeController extends Controller
 {
     /**
@@ -25,9 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        session_start();
-        $user_name=$_SESSION['User_name'];
-        $token=$_SESSION['token'];
+        $user=Auth::user();
+        $user_name=$user->email;
+        $token=  $user->createToken($user->email.'_Token')->plainTextToken;
         return redirect("http://localhost:3000/?user={$user_name}&token={$token}");
         
     }
