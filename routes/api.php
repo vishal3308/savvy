@@ -27,11 +27,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         return response()->json(['status'=>200,'name'=>$user->email]);
     });
     Route::post('/Transcription_response',[UserController::class,'transcript_respond']);
+    Route::post('/Highlight_Response',[UserController::class,'Highlight_Respond']);
     Route::get('/Calendar_events',[CalendarApiController::class,'calendar_event']);
     Route::get('/logout',[gCalenderController::class,'logout_savvy']);
-
+    
 });
 
+Route::post('/Meeting_name',[UserController::class,'Meeting_name']);
 // Route::get('/user',[UserController::class,'view']);
 Route::post('/user',[UserController::class,'find_user']);
 Route::post('/setmeeting',[UserController::class,'set_meeting']);

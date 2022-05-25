@@ -32,6 +32,29 @@ class UserController extends Controller
         return response()->json(['status'=>$meeting->id]);
     }
 
+    public function Highlight_Respond(Request $request){
+        $user=Auth::user();
+        $meeting_link=$request->meeting_link;
+        $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
+        if(!$meeting){
+            $Error=['No Transcription found.'];
+            return response()->json(['Transcript'=>$Error]);
+        }
+        $user_id=$user->id;
+        $meeting_id=$meeting->id;
+        $meeting_date=date("Y-m-d",strtotime($request->date));
+        $meeting_transcript=Meeting_transcript::select('meeting_transcript.id','speaker_name','transcript_text','moment_type')->join('meeting_highlight','meeting_transcript.id','=','meeting_highlight.transcript_text_id')->where('meeting_id', '=',$meeting_id)->where('user_id','=',$user_id)
+        ->where('meeting_transcript.created_at',"LIKE","{$meeting_date}%")->get();
+        
+        if(sizeof($meeting_transcript)){
+            return response()->json(['Transcript'=>$meeting_transcript]);
+        }
+        else{
+            $Error=['No Action/Highlight text found.'];
+            return response()->json(['Transcript'=>$Error]);
+        }
+    }
+
     public function transcription(Request $request){
         $user_id=$request->id;
         $tags=$request->transcript['tags'];
@@ -121,6 +144,18 @@ class UserController extends Controller
 
         }
        
+    }
+
+    public function Meeting_name(Request $request){
+        $meeting_link=$request->meeting_link;
+        $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
+        if(!$meeting){
+            return response()->json(['meeting_name'=>'Untitled Meeting']);
+        }
+        else{
+            return response()->json(['meeting_name'=>$meeting->external_meeting_name]);
+
+        }
     }
 
     public function transcript_respond(Request $request){
