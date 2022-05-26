@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Meeting;
 use App\Models\Meeting_highlight;
 use App\Models\Meeting_transcript;
+use App\Models\Google_calendar;
 use Illuminate\Support\Facades\DB;
 use Auth;
 class UserController extends Controller
@@ -17,9 +18,6 @@ class UserController extends Controller
         return response()->json($user);
     }
     public function set_meeting(Request $request){
-        // echo"<pre>";
-        // print_r($request['meeting_owner']);
-        // echo"<pre>";
         $meeting=Meeting::where("external_meeting_id", '=',$request['callId'])->first();
         if(!$meeting){
             $meeting=new Meeting();
@@ -30,6 +28,27 @@ class UserController extends Controller
         }
         
         return response()->json(['status'=>$meeting->id]);
+    }
+
+    public function set_googlecal(Request $request){
+        $meeting_link=$request->callId;
+        $google_event=Google_calendar::where('Meeting_link','=',$meeting_link)->first();
+        
+        if($google_event){
+            if($google_event->Recurrence){
+                return response()->json(['response'=>"Already Exist"]);
+            }
+        }
+            $google_event=new Google_calendar();
+            $google_event->Event_id=md5($request['callId']);
+            $google_event->Meeting_plateform="Google Meet";
+            $google_event->Meeting_link=$request['callId'];
+            $google_event->user_id=1;
+            $google_event->Summary=$request['name'];
+            $google_event->Description='Starting an instant meeting';
+            $google_event->Starting_time=$request['start_time'];
+            $google_event->save();
+        return response()->json(['response'=>'New Event']);
     }
 
     public function Highlight_Respond(Request $request){

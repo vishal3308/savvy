@@ -37,6 +37,7 @@ Route::post('/Meeting_name',[UserController::class,'Meeting_name']);
 // Route::get('/user',[UserController::class,'view']);
 Route::post('/user',[UserController::class,'find_user']);
 Route::post('/setmeeting',[UserController::class,'set_meeting']);
+Route::post('/set_googlecal',[UserController::class,'set_googlecal']);
 
 // ===============================Google Calendar ApI ==
 Auth::routes();
