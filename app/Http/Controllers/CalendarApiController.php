@@ -18,14 +18,10 @@ class CalendarApiController extends Controller
         // }
         // else{
         $user_id=Auth::user()->id;
-        $Events=Google_calendar::where('user_id', '=',$user_id)->orderBy('id','desc')->get();
+        $Events=Google_calendar::where('user_id', '=',$user_id)->where('Meeting_plateform','=','Google Meet')->get();
         return response()->json($Events);
         
     }
-    public function User_details(){
-        $user_id=Auth::User()->id;
-        $user=['name'=>"Vishal",'user_id'=>$user_id];
-        return response()->json($user);
-    }
+   
 
 }

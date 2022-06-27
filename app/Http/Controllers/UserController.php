@@ -17,6 +17,8 @@ class UserController extends Controller
         $user= User::with('get_company')->get();
         return response()->json($user);
     }
+    // ============================================Extenstion API============================
+
     public function set_meeting(Request $request){
         $meeting=Meeting::where("external_meeting_id", '=',$request['callId'])->first();
         if(!$meeting){
@@ -35,8 +37,13 @@ class UserController extends Controller
         $google_event=Google_calendar::where('Meeting_link','=',$meeting_link)->first();
         
         if($google_event){
+            $meeting_date=date("Y-m-d",strtotime($request->start_time));
+            $cal_date=date("Y-m-d",strtotime($google_event->created_at));
             if($google_event->Recurrence){
                 return response()->json(['response'=>"Already Exist"]);
+            }
+            elseif(!$google_event->Recurrence & $meeting_date==$cal_date){
+                return response()->json(['response'=>"Rejoining Meeting"]);
             }
         }
             $google_event=new Google_calendar();
@@ -49,29 +56,6 @@ class UserController extends Controller
             $google_event->Starting_time=$request['start_time'];
             $google_event->save();
         return response()->json(['response'=>'New Event']);
-    }
-
-    public function Highlight_Respond(Request $request){
-        $user=Auth::user();
-        $meeting_link=$request->meeting_link;
-        $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
-        if(!$meeting){
-            $Error=['No Transcription found.'];
-            return response()->json(['Transcript'=>$Error]);
-        }
-        $user_id=$user->id;
-        $meeting_id=$meeting->id;
-        $meeting_date=date("Y-m-d",strtotime($request->date));
-        $meeting_transcript=Meeting_transcript::select('meeting_transcript.id','speaker_name','transcript_text','moment_type')->join('meeting_highlight','meeting_transcript.id','=','meeting_highlight.transcript_text_id')->where('meeting_id', '=',$meeting_id)->where('user_id','=',$user_id)
-        ->where('meeting_transcript.created_at',"LIKE","{$meeting_date}%")->get();
-        
-        if(sizeof($meeting_transcript)){
-            return response()->json(['Transcript'=>$meeting_transcript]);
-        }
-        else{
-            $Error=['No Action/Highlight text found.'];
-            return response()->json(['Transcript'=>$Error]);
-        }
     }
 
     public function transcription(Request $request){
@@ -164,15 +148,24 @@ class UserController extends Controller
         }
        
     }
+    // ============================================ End Extenstion API============================
+
+    // ============================================ Savvy Portale API============================
 
     public function Meeting_name(Request $request){
         $meeting_link=$request->meeting_link;
         $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
+        $reccurence=Google_calendar::where('Meeting_link','=',$meeting_link)->orderBy('id','desc')->first();
         if(!$meeting){
-            return response()->json(['meeting_name'=>'Untitled Meeting']);
+            return response()->json(['meeting_name'=>'Meeting not found','Recurrence'=>'Single']);
         }
         else{
-            return response()->json(['meeting_name'=>$meeting->external_meeting_name]);
+            if($reccurence){
+                return response()->json(['meeting_name'=>$meeting->external_meeting_name,'Recurrence'=>$reccurence->Recurrence]);
+            }
+            else{
+                return response()->json(['meeting_name'=>$meeting->external_meeting_name,'Recurrence'=>'Single']);
+            }
 
         }
     }
@@ -182,8 +175,7 @@ class UserController extends Controller
         $meeting_link=$request->meeting_link;
         $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
         if(!$meeting){
-            $Error=['No Transcription found.'];
-            return response()->json(['Transcript'=>$Error]);
+            return response()->json(['Transcript'=>'No Transcription found.']);
         }
         $user_id=$user->id;
         $meeting_id=$meeting->id;
@@ -194,10 +186,59 @@ class UserController extends Controller
             return response()->json(['Transcript'=>$meeting_transcript]);
         }
         else{
-            $Error=['No Transcription found because you had not attended this meeting.'];
-            return response()->json(['Transcript'=>$Error]);
+            return response()->json(['Transcript'=>'No Transcription found because you had not attended this meeting.']);
         }
     }
+
+    public function Highlight_Respond(Request $request){
+        $user=Auth::user();
+        $meeting_link=$request->meeting_link;
+        $meeting=Meeting::where("external_meeting_id", '=',$meeting_link)->first();
+        if(!$meeting){
+            return response()->json(['Transcript'=>'No Transcription found.']);
+        }
+        $user_id=$user->id;
+        $meeting_id=$meeting->id;
+        $meeting_date=date("Y-m-d",strtotime($request->date));
+        $meeting_transcript=Meeting_transcript::select('meeting_transcript.id','speaker_name','transcript_text','moment_type')->join('meeting_highlight','meeting_transcript.id','=','meeting_highlight.transcript_text_id')->where('meeting_id', '=',$meeting_id)->where('user_id','=',$user_id)
+        ->where('meeting_transcript.created_at',"LIKE","{$meeting_date}%")->get();
+        
+        if(sizeof($meeting_transcript)){
+            return response()->json(['Transcript'=>$meeting_transcript]);
+        }
+        else{
+            return response()->json(['Transcript'=>'No Action/Highlight text found.']);
+        }
+    }
+
+    public function Setting_highlight(Request $request){
+        $meeting_id=$request->meeting_id;
+        $moment_type=$request->moment_type;
+        $meeting_highlight=Meeting_highlight::where('transcript_text_id','=',$meeting_id)->first();
+        if($meeting_highlight){
+            $meeting_highlight->moment_type=$moment_type;
+            $meeting_highlight->update();
+        }
+        else{
+            $meeting_highlight=new Meeting_highlight;
+            $meeting_highlight->moment_type=$moment_type;
+            $meeting_highlight->transcript_text_id=$meeting_id;
+            $meeting_highlight->save();
+        }
+        return response()->json(['status'=>200]);
+    }
+    public function Updating_transcript(Request $request){
+        $user_id=Auth::user()->id;
+        $text_id=$request->transcript_id;
+        $meeting_transcript=Meeting_transcript::where('user_id','=',$user_id)->where('id','=',$text_id)->first();
+        if($meeting_transcript){
+            $meeting_transcript->transcript_text=$request->transcript_text;
+            $meeting_transcript->update();
+            return response()->json(['status'=>'Successfull']);
+        }
+        return response()->json(['status'=>'Failed']);
+    }
+    // ============================================End Savvy Portale API============================
 
     public function checking(){
         $date="20220330T195959Z";
